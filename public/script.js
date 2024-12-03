@@ -1,9 +1,10 @@
 const socket = io("/");
 const videoGrid = document.getElementById("video-grid");
 const myPeer = new Peer(undefined, {
-  host: window.location.hostname, // Use the current host URL for deployment
-  port: "3001", // PeerJS server will run on port 3001
-  path: "/peerjs", // The path for PeerJS
+  host: window.location.hostname,
+  port: process.env.PORT || 3001,
+  path: "/peerjs",
+  secure: true, // This ensures the WebSocket connection is secure in production
 });
 const myVideo = document.createElement("video");
 myVideo.muted = true;

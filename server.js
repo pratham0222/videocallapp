@@ -1,12 +1,26 @@
 const express = require("express");
-const app = express();
-const server = require("http").Server(app);
-const io = require("socket.io")(server);
 const { v4: uuidV4 } = require("uuid");
-
-// Import PeerJS and create a PeerJS server
+const http = require("http");
+const socketIo = require("socket.io");
 const PeerServer = require("peer").PeerServer;
-const peerServer = PeerServer({ port: 3001, path: "/peerjs" }); // PeerJS server
+
+const app = express();
+const server = http.Server(app);
+const io = socketIo(server);
+
+// Create PeerJS server
+const peerServer = PeerServer({
+  port: process.env.PORT || 3001, // Use Render's assigned port for production
+  path: "/peerjs",
+  cors: {
+    origin: "*", // Allow all origins or specify your Render domain
+    methods: ["GET", "POST"],
+  },
+});
+
+peerServer.on("listening", () => {
+  console.log("PeerJS server is running on port 3001");
+});
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -30,7 +44,6 @@ io.on("connection", (socket) => {
   });
 });
 
-// Run the server on port 3000
-server.listen(3000, () => {
-  console.log("Server running on port 3000");
+server.listen(process.env.PORT || 3000, () => {
+  console.log("Server running on port " + (process.env.PORT || 3000));
 });
